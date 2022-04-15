@@ -9,7 +9,7 @@ const {
 /**
  * Get all of the items on the shelf
  */
-router.get('/', rejectUnauthenticated, (req, res) => {
+router.get('/', (req, res) => {
   let queryText = `SELECT * FROM "item";`;
   pool.query(queryText)
   .then(result => {
@@ -47,7 +47,7 @@ router.post('/', rejectUnauthenticated , (req, res) => {
 /**
  * Delete an item if it's something the logged in user added
  */
-router.delete('/:id', (req, res) => {
+router.delete('/:id', rejectUnauthenticated, (req, res) => {
   // endpoint functionality
   let queryText = `
     DELETE FROM "item"
@@ -69,8 +69,26 @@ router.delete('/:id', (req, res) => {
 /**
  * Update an item if it's something the logged in user added
  */
-router.put('/:id', (req, res) => {
+router.put('/', (req, res) => {
   // endpoint functionality
+console.log(req.body.id, req.body.newItem);
+
+  let queryText = `
+    UPDATE "item"
+    SET "description" = $2
+    WHERE "id" = $1 AND "user_id" = $3;
+  `;
+
+  let values = [Number(req.body.id), req.body.newItem, req.user.id];
+
+  pool.query(queryText, values)
+    .then(result => {
+      res.sendStatus(200)
+      
+    }).catch(err => { 
+    res.sendStatus(500);
+    // For testing only, can be removed
+    });
 });
 
 /**

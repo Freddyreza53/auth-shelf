@@ -4,8 +4,15 @@ import axios from 'axios';
 function* shelfSagaWatcher() {
     yield takeEvery('FETCH_ITEMS', fetchItems);
     yield takeEvery('ADD_ITEM', addItem);
-    yield takeEvery('DELETE_ITEM', deleteItem)
+    yield takeEvery('DELETE_ITEM', deleteItem);
+    yield takeEvery('UPDATE_ITEM', updateItem);
 }
+
+function* updateItem(action) {
+    yield axios.put(`/api/shelf`, action.payload );
+    yield put({type: 'FETCH_ITEMS'})
+}
+
 function* addItem(action) {
     yield axios.post('/api/shelf', action.payload);
     yield put({type: 'FETCH_ITEMS'})
